@@ -30,7 +30,7 @@ The constant-potential version was developed by Zhaoming Xia.
     from ase.calculators.vasp.vaspFCP import VaspFCP
     from ase.io import read
     
-    calculatorFP=VaspFCP(xc='PBE', #functional
+    calculator=VaspFCP(xc='PBE', #functional
           pp='PBE',            #type of pseudopotential
           kpts=(2, 2, 1),      #kpoint
           ncore=4,
