@@ -1,0 +1,37 @@
+#!/bin/bash
+#SBATCH -n 52     # 8172队列单节点52核
+#SBATCH -N 1        # 申请一台节点
+#SBATCH -p standard     # 使用8172队列
+
+
+echo "Starting job $SLURM_JOB_ID at " `date`
+echo "SLURM_SUBMIT_DIR is $SLURM_SUBMIT_DIR"
+echo "Running on nodes: $SLURM_NODELIST"
+
+## 
+module load intel-psxe/2020
+export LD_LIBRARY_PATH=/home/xiazhaoming/.local/lib:$LD_LIBRARY_PATH
+export PATH=/home/xiazhaoming/.local/bin:$PATH
+export PYTHONPATH=/home/xiazhaoming/.local/lib/python3.8/site-packages:$PYTHONPATH
+export I_MPI_ADJUST_REDUCE=3
+ulimit -s unlimited
+
+
+##define ase vasp interface
+####command to run vasp
+export ASE_VASP_COMMAND="mpirun vasp_std > vasp.out"
+####define VASP_PP_PATH. It should include“potpaw “potpaw_GGA” and “potpaw_PBE”subdir####
+export VASP_PP_PATH=/home/xiazhaoming/bin/vasp6/vasp6.2.1/POT
+#####dir of <vdw_kernel.bindat>#########################
+export ASE_VASP_VDW=/home/xiazhaoming/bin/vasp6/vasp6.2.1/POT
+
+
+
+##which ase
+python3 ./testPLUMED.py
+
+
+
+
+echo "Job $SLURM_JOB_ID done at " `date`
+
