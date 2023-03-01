@@ -15,26 +15,28 @@ The constant-potential version was developed by Zhaoming Xia.
 
 1. If you want to run fully constant potential calculation properly, the vaspsol code (https://github.com/henniggroup/VASPsol) should be included in the source code directory of VASP before compiling VASP; the patch of vaspsol should be applied to compute the FERMI_SHIFT; add -Dsol_compat option to the list of precompiler options(CPP_OPTIONS) in the makefile of VASP, then compile VASP.
 
-2. copy vaspFCP.py in python_path/ase/calculators/vasp/
+2. Copy vaspFCP.py to "python_path/ase/calculators/vasp/".
 
-3. If you want to use PLUMED interface, read this page (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html)
+3. If you want to use PLUMED interface, read this page (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html).
 
 ## How to use
 
 1. The path of the directory containing the pseudopotential directories (potpaw,potpaw_GGA, potpaw_PBE, ...) should be set by the environmental flag $VASP_PP_PATH.
 
-2. Call the module as follow:
+2. A simple example to call the module:
 
 '''
 
     from ase.calculators.vasp.vaspFCP import VaspFCP
-    calculator=VaspFCP(xc='PBE', 
-          pp='PBE',            
-          kpts=(2, 2, 1),     
+    from ase.io import read
+    
+    calculatorFP=VaspFCP(xc='PBE', #functional
+          pp='PBE',            #type of pseudopotential
+          kpts=(2, 2, 1),      #kpoint
           ncore=4,
-          ispin=2,lasph=True,ismear=0, sigma=0.1, algo='Fast', ediff=1E-5, prec='Accurate',  encut=400,  nelm=500 , addgrid='Ture',lreal='Auto',lorbit=11, ivdw=11, 
-          tau=0, lrhoion=False, lsol=True, eb_k=78.4, lambda_d_k=3.0, 
-          lwave=True,              
+          ispin=2,lasph=True,ismear=0, sigma=0.1, algo='Fast', ediff=1E-5, prec='Accurate',  encut=400,  nelm=500 , addgrid='Ture',lreal='Auto',lorbit=11, ivdw=11,     #parameters for SCF
+          tau=0, lrhoion=False, lsol=True, eb_k=78.4, lambda_d_k=3.0, #parameters for vaspsol
+          lwave=True,              #write WAVECAR to speed up the SCF of the next ionic step
           )
 
     atoms=read('POSCAR')
