@@ -1,5 +1,5 @@
 # FCP-vasp-ase
-ASE interface for fully constant potential with the Vienna Ab initio Simulation Package (VASP)
+ASE interface for fully constant potential simulations with the Vienna Ab initio Simulation Package (VASP)
 
 version 1.0
 
