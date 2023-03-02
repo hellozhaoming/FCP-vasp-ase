@@ -15,7 +15,11 @@ The constant-potential version was developed by Zhaoming Xia.
 
 1. If you want to run fully constant potential calculation properly, the vaspsol code (https://github.com/henniggroup/VASPsol) should be included in the source code directory of VASP before compiling VASP; the patch of vaspsol should be applied to compute the FERMI_SHIFT; add -Dsol_compat option to the list of precompiler options(CPP_OPTIONS) in the makefile of VASP, then compile VASP.
 
-2. Copy vaspFCP.py to "python_path/ase/calculators/vasp/".
+2. Make sure you have installed python and pip.
+
+3. Install ase by 'pip install ase'
+
+2. Copy vaspFCP.py to "python_lib_path/ase/calculators/vasp/".
 
 3. If you want to use PLUMED interface, read this page (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html).
 
