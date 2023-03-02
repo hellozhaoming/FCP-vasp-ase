@@ -17,7 +17,7 @@ The constant-potential version was developed by Zhaoming Xia.
 
 2. Make sure you have installed python and pip.
 
-3. Install ase by 'pip install ase'
+3. Install ase by 'pip install ase'.
 
 2. Copy vaspFCP.py to "python_lib_path/ase/calculators/vasp/".
 
@@ -55,12 +55,15 @@ The constant-potential version was developed by Zhaoming Xia.
 
             U: float
                The potential of working electrode (V vs. reference electrode).
+               defult:None
             
             NELECT: float
                 initial guass of number of electrons.
+                defult:None
             
             NELECT0: float
                 number of electrons of the potential of zero charge (PZC). 
+                defult:None
 
             FCPmethod: str
                 method to run constant-potential calculation:
@@ -68,9 +71,11 @@ The constant-potential version was developed by Zhaoming Xia.
                 'scipyBFGS'
                 'scipyCG'
                 'scipyLBFGS'
+                defult:'Newton-fitting'
 
             FCPconv: float
-                 converagence of delta_miu (eV) for constant-potential calculation. defult:0.01
+                 converagence of delta_miu (eV) for constant-potential calculation. 
+                 defult:0.01
 
             work_ref:float
                 the work function (the negative value of absolut electrode potential) of reference electrode.
