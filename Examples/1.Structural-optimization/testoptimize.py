@@ -22,7 +22,7 @@ def get_number_of_electrons(file='OUTCAR'):
     return nelect
 
  
-#Set up VASP calculator        ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+#Set up VASP calculator for constant-charge calculations       ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 calculator=Vasp(xc='PBE', #functional
           pp='PBE',            #type of pseudopotential
           kpts=(2, 2, 1),      #kpoint
@@ -34,7 +34,7 @@ calculator=Vasp(xc='PBE', #functional
 calculator.set(label='vacuum', directory='vacuum')
 
 
-#Set up VASP calculator        ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+#Set up VASP calculator for constant-potential calculations       ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 calculatorFP=VaspFCP(xc='PBE', #functional
           pp='PBE',            #type of pseudopotential
           kpts=(2, 2, 1),      #kpoint
@@ -49,12 +49,12 @@ calculatorFP.set(label='relax', directory='relax')
 U=-1.5
 atoms=read('POSCAR')
 
-
+###set initial magmom
 for atom in atoms:
     if atom.symbol=='Fe':
         atom.magmom=0.001
 
-NELECT0=222
+NELECT0=222 
 #or NELECT0=get_number_of_electrons(file='./vacuum/OUTCAR')
 NELECT=222
 
@@ -63,6 +63,6 @@ NELECT=222
 
 symb=str(U)
 calculatorFP.set(label=symb, directory=symb,U=U,fpmethod ='Newton-fitting', NELECT=NELECT,NELECT0=NELECT0)
-atoms.set_calculator(calculatorFP)
+atoms.set_calculator(calculatorFP) ###
 dyn=LBFGS(atoms)
 dyn.run(fmax=0.01)

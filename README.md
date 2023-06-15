@@ -1,5 +1,5 @@
 # FCP-vasp-ase
-ASE interface for fully constant potential simulations with the Vienna Ab initio Simulation Package (VASP)
+ASE interface for fully converged constant potential (FCP) simulations with the Vienna Ab initio Simulation Package (VASP)
 
 version 1.0
 
@@ -13,15 +13,15 @@ The constant-potential version was developed by Zhaoming Xia.
 
 ## Before you use
 
-1. If you want to run fully constant potential calculation properly, the vaspsol code (https://github.com/henniggroup/VASPsol) should be included in the source code directory of VASP before compiling VASP; the patch of vaspsol should be applied to compute the FERMI_SHIFT; add -Dsol_compat option to the list of precompiler options(CPP_OPTIONS) in the makefile of VASP, then compile VASP.
+1. If you want to run constant-potential calculation properly, the vaspsol code (https://github.com/henniggroup/VASPsol) should be included in the source code directory of VASP before compiling VASP; the patch of vaspsol should be applied to compute the FERMI_SHIFT (installation guidance: https://github.com/henniggroup/VASPsol/blob/master/README.md); add -Dsol_compat option to the list of precompiler options(CPP_OPTIONS) in the makefile of VASP, then compile VASP.
 
 2. Make sure you have installed python and pip.
 
 3. Install ase by 'pip install ase'.
 
-2. Copy vaspFCP.py to "python_lib_path/ase/calculators/vasp/".
+2. Copy vaspFCP.py to "ase_installation_path/calculators/vasp/".(note:ase_installation_path can be found by running 'ase info')
 
-3. If you want to use PLUMED interface, read this page (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html).
+3. If you want to use PLUMED interface, the python wrap of PLUMED should be installed. Read this page for more information (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html).
 
 ## How to use
 

@@ -70,9 +70,17 @@ calculatorFP.set(label=symb, directory=symb,U=U,fpmethod ='Newton-fitting', NELE
 atoms.set_calculator(calculatorFP)
 
 
-
 timestep = 0.5* units.fs
 ps = 1000 * units.fs
+
+
+###if perform MD
+dyn = NPT(atoms, timestep, temperature_K=300, ttime=5 * units.fs,mask=(0,0,0),externalstress=0,trajectory='MTD.traj',append_trajectory=True)
+dyn.attach(MDLogger(dyn, atoms, 'metadynamics.log', header=True, stress=False, peratom=False, mode="a"), interval=1)
+dyn.run(20000)
+
+'''
+###if use PLUMED to perform contraint MD 
 isexist=os.path.exists('MTD.traj')
 if not isexist:
     MaxwellBoltzmannDistribution(atoms, temperature_K=300)
@@ -81,7 +89,7 @@ if not isexist:
              "DISTANCE ATOMS=51,53 LABEL=d1",
              "DISTANCE ATOMS=52,53 LABEL=d2",
              "UPPER_WALLS ARG=d1 AT=3.2 KAPPA=500.",
-             "UPPER_WALLS ARG=d2 AT=3.2 KAPPA=500."
+             "UPPER_WALLS ARG=d2 AT=3.2 KAPPA=500."          #constraint the distances of atoms 
              "PRINT ARG=* FILE=COLVAR"
              #+ " GRID_RFILE=GRID"
              ]   
@@ -123,4 +131,4 @@ else:
     dyn = NPT(atoms, timestep, temperature_K=300, ttime=5 * units.fs,mask=(0,0,0),externalstress=0,trajectory='MTD.traj',append_trajectory=True)
     dyn.attach(MDLogger(dyn, atoms, 'metadynamics.log', header=True, stress=False, peratom=False, mode="a"), interval=1)
     dyn.run(20000)
-
+'''
