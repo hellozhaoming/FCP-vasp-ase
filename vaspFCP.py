@@ -164,6 +164,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
                  NELECT0=None, 
                  adaptive_lr=False,
                  work_ref=4.6,
+                 max_FCP_iter=10000,
                  **kwargs):
 
         self._atoms = None
@@ -221,11 +222,12 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         self.Ctemp=C
         
         self.FCPmethod=FCPmethod
+        self.max_FCP_iter=max_FCP_iter
         self.adaptive_lr=adaptive_lr
         LogPath = self.directory
         TmpIsExist = os.path.exists(LogPath)
         with open(LogPath+ '/log-' + str(1) + '.txt', mode='a',encoding='utf-8') as f:
-            f.write('loop'+' '+'Nelect' +' '+'feimi'+' '+'fermishift'+ ' ' +'energyclose' +' '+'energygrand'+' '+'Ucal')
+            f.write('loop'+' '+'Nelect' +' '+'feimi'+' '+'fermishift'+ ' ' +'energyclose' +' '+'energygrand'+' '+'Ucal'+' '+'C')
         if not TmpIsExist:
             os.mkdir(LogPath)
 
@@ -320,7 +322,10 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
             self.FCPconv=float(kwargs.pop('FCPconv'))
 
         if 'work_ref' in kwargs:
-            self.FCPconv=float(kwargs.pop('work_ref'))
+            self.workSHE=float(kwargs.pop('work_ref'))
+
+        if 'max_FCP_iter' in kwargs:
+            self.max_FCP_iter=int(kwargs.pop('max_FCP_iter'))
             
 
         changed_parameters.update(Calculator.set(self, **kwargs))
@@ -393,7 +398,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
 
         try:
             if open_and_close:
-                out = open(txt, 'w')
+                out = open(str(txt), 'w')
             yield out
         finally:
             if open_and_close:
@@ -425,9 +430,9 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         import os
         LogPath = self.directory  # directory of logfile
         TmpIsExist = os.path.exists(LogPath)
-        loopmax=20
+        loopmax=self.max_FCP_iter
         FCPconv=self.FCPconv
-        self.FCPloop=1
+        self.FCPloop=0
         lr=1.0      # learning rate 0<lr<=1
         lrcount=0
         dc=lr
@@ -503,6 +508,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
                     os.system('echo dfermi/dne is not positive'  + ' >> ' + self.directory + '/WARNING.txt')
                 self.C=1/K
             os.system('echo '+ str(np.linalg.norm(np.cross(self.atoms.cell[0],self.atoms.cell[1]))/self.C) + ' >> '+ self.directory +'/K.txt')
+            #os.system('echo '+ str(self.C)+ ' >>  C.txt')
             return self.C
 
 
@@ -539,6 +545,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         else:
             while self.FCPloop < loopmax:
                 startcal=time.time()
+                self.FCPloop += 1
                 self.write_input(self.atoms, properties, system_changes)
                 if self.Nelect != None:
                     os.system('echo NELECT='+ str(self.Nelect) + ' >> ' + self.directory +'/INCAR')
@@ -560,32 +567,37 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
                 endcal=time.time()
                 with open(LogPath+ '/tmp-log-FCP.txt', mode='a',encoding='utf-8') as f:
                     f.write('\n'+str(self.FCPloop)+' '+str(self.Nelect) +' '+str(self.fermi)+' '+str(self.fermishift)+' '+ str(Ucal)+' ' + str(conv)+ ' ' +str(self.energy_close) +' '+str(self.energy_free)+' '+str(endcal-startcal))
-                if abs(conv)<FCPconv:
-                    break
+
     
+                
+                Ctemp= Cevalue(self.Nelect)
+                if Ctemp > 0:
+                    self.C=Ctemp
                 if convold != None:
-                    Ctemp= Cevalue(self.Nelect)
-                    if Ctemp > 0:
-                        self.C=Ctemp
                     if convold*conv < 0:
                         lrcount+=1
                 convold = conv
                 Nelectold = self.Nelect
                 
+                if self.FCPloop== loopmax:
+                    break
     
                 if self.FCPmethod == 'Newton-fitting':
                     if self.adaptive_lr==True:
                         if lrcount >1:
-                            lr=lr-0.5**lrcount                
+                            lr=lr-0.5**lrcount
+                    #print(str(Nelectold),str(lr),str(convold),str(self.C))
                     self.Nelect=Nelectold-lr*convold*self.C  #lr is learning rate
                            
-                self.FCPloop += 1
+                
                 if abs(self.Nelect-Nelectold)/self.Nelect > 0.05: 
-                    #if the number of electrons have a huge change, do not read the WAVECAR of previous ionic step. 
                     os.system('rm '+self.directory +'/WAVECAR')
+
+                if abs(conv)<FCPconv:
+                    break
         
         with open('./log-' + str(1) + '.txt', mode='a',encoding='utf-8') as f:
-            f.write('\n'+str(self.FCPloop)+' '+str(self.Nelect) +' '+str(self.fermi)+' '+str(self.fermishift)+ ' ' +str(self.energy_close) +' '+str(self.energy_free)+' '+str(Ucal))
+            f.write('\n'+str(self.FCPloop)+' '+str(Nelectold) +' '+str(self.fermi)+' '+str(self.fermishift)+ ' ' +str(self.energy_close) +' '+str(self.energy_free)+' '+str(Ucal)+' '+str(self.C))
 
             
             
@@ -714,7 +726,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         """
         filename = self._indir(filename)
         dct = self.asdict()
-        jsonio.write_json(filename, dct)
+        jsonio.write_json(str(filename), dct)
 
     def read_json(self, filename):
         """Load Calculator state from an exported JSON Vasp file."""
@@ -755,19 +767,19 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         self.read_sort()
 
         # Read atoms
-        self.atoms = self.read_atoms(filename=self._indir('CONTCAR'))
+        self.atoms = self.read_atoms(filename=str(self._indir('CONTCAR')))
 
         # Read parameters
-        self.read_incar(filename=self._indir('INCAR'))
-        self.read_kpoints(filename=self._indir('KPOINTS'))
-        self.read_potcar(filename=self._indir('POTCAR'))
+        self.read_incar(filename=str(self._indir('INCAR')))
+        self.read_kpoints(filename=str(self._indir('KPOINTS')))
+        self.read_potcar(filename=str(self._indir('POTCAR')))
 
         # Read the results from the calculation
         self.read_results()
 
     def _indir(self, filename):
         """Prepend current directory to filename"""
-        return Path(self.directory) / filename
+        return str(Path(self.directory) / filename)
 
     def read_sort(self):
         """Create the sorting and resorting list from ase-sort.dat.
@@ -918,7 +930,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         >>> outcar = load_file('OUTCAR')
         """
         filename = self._indir(filename)
-        with open(filename, 'r') as fd:
+        with open(str(filename), 'r') as fd:
             return fd.readlines()
 
     @contextmanager
@@ -1071,7 +1083,7 @@ class VaspFCP(GenerateVaspInput, Calculator):  # type: ignore
         """Get the VASP version number"""
         # The version number is the first occurrence, so we can just
         # load the OUTCAR, as we will return soon anyway
-        if not os.path.isfile(self._indir('OUTCAR')):
+        if not os.path.isfile(str(self._indir('OUTCAR'))):
             return None
         with self.load_file_iter('OUTCAR') as lines:
             for line in lines:
