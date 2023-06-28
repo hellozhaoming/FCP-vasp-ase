@@ -9,6 +9,7 @@ This module is modified based on the ASE interface to VASP.
 The original interface was developed on the basis of modules by Jussi Enkovaara and John Kitchin.  
 The constant-potential version was developed by Zhaoming Xia.
 
+**If you use this code, please cite:** ***https://doi.org/10.1021/acs.jctc.3c00237 ***
 
 
 ## Before you use
