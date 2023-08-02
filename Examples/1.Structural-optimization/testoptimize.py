@@ -62,7 +62,7 @@ NELECT=222
 #atoms.set_constraint(c) ###fix atoms
 
 symb=str(U)
-calculatorFP.set(label=symb, directory=symb,U=U,fpmethod ='Newton-fitting', NELECT=NELECT,NELECT0=NELECT0)
+calculatorFP.set(label=symb, directory=symb,U=U,FCPmethod = 'Newton-fitting', NELECT=NELECT,NELECT0=NELECT0)
 atoms.set_calculator(calculatorFP) ###
 dyn=LBFGS(atoms)
 dyn.run(fmax=0.01)
