@@ -65,7 +65,7 @@ NELECT=222.3660124127793
 #c= FixAtoms(indices=[8])
 #atoms.set_constraint(c)
 symb=str(U)
-calculatorFP.set(label=symb, directory=symb,U=U,fpmethod ='Newton-fitting', NELECT=NELECT,NELECT0=NELECT0)
+calculatorFP.set(label=symb, directory=symb,U=U,FCPmethod = 'Newton-fitting', NELECT=NELECT,NELECT0=NELECT0)
 
 atoms.set_calculator(calculatorFP)
 
