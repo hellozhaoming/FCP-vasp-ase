@@ -124,7 +124,7 @@ If you want to use this code for other DFT-calculators, you must define a functi
 
 The way to verify the E_Fermi_shift is to plot the Egrand and |Ucal-U|. If E_Fermi_shift is reasonable, the minimum point for Egrand and |Ucal-U| should be the same.
 
-![Image text](https://raw.githubusercontent.com/hellozhaoming/FCP-vasp-ase/blob/main/images/STABILITY.jpg)
+![Image text](images/STABILITY.jpg)
 
 The accuracy of electronic step is critical for the convergence of FCP. I recommend to use a high an accuracy for DFT calculations unless the electronic step is extremely slow.
 
