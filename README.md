@@ -112,4 +112,25 @@ The original paper used the code of version 1.0
 ## Other DFT-calculators
 This interface only support Vasp calculator. If you want to use other calculator, you should define the read_fermishift() function get_fermi_level()
 
+## For advanced users
+
+The grand energy Egrand is defined as:
+
+Egrand = E + E_Fermi_shift * (Nelect - Nelect0) + (U + work_SHE) * (Nelect - Nelect0)
+
+Note that the averaged electrostatic potential of the periodic cell is zero for DFT, which indicates that the electronic energy is referenced at the averaged electrostatic potential. It has no influence for the system with no net charge (Nelect - Nelect0 = 0). However, the electronic energy should be referenced at vacuum if the net charge in nonzero, since the work function of SHE is referenced at vacuum. Thus, "E_Fermi_shift * (Nelect - Nelect0)" should not be ignored.
+
+If you want to use this code for other DFT-calculators, you must define a function to calculate the E_Fermi_shift. A reasonable approximation for E_Fermi_shift is to calculate the electrostatic potential at the point where there is the lowest electron density.
+
+The way to verify the E_Fermi_shift is to plot the Egrand and |Ucal-U|. If E_Fermi_shift is reasonable, the minimum point for Egrand and |Ucal-U| should be the same.
+
+![Image text](https://raw.githubusercontent.com/hellozhaoming/FCP-vasp-ase/blob/main/images/STABILITY.jpg)
+
+The accuracy of electronic step is critical for the convergence of FCP. I recommend to use a high an accuracy for DFT calculations unless the electronic step is extremely slow.
+
+For molecular dynamics, one should turn off "always_adjust" and set max_FCP_iter into 1 to disable the converging of electrochemical potential and allow the fluctuation of electrochemical potential.
+
+
+
+
 
