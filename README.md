@@ -109,6 +109,11 @@ The original paper used the code of version 1.0
                 defult:True
 '''
 
+Tips:
+The implicit solvent model will shield the dipole on the surface. Any additional dipole correction will lead to unphisical dipole, and the this code will not coverge to energy minimum with dipole correction.
+
+
+
 ## Other DFT-calculators
 This interface only support Vasp calculator. If you want to use other calculator, you should define the read_fermishift() function get_fermi_level()
 
