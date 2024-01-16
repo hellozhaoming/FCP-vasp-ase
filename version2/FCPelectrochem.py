@@ -39,6 +39,7 @@ class FCP(FileIOCalculator):
                  work_ref=4.6,
                  max_FCP_iter=10000,
                  always_adjust=True,
+                 explicit_sol=False,
                  **kwargs):
         '''
         always_adjust
@@ -59,6 +60,7 @@ class FCP(FileIOCalculator):
         self.Nelect0=NELECT0
         self.Cpersurf=C
         self.always_adjust=always_adjust
+        self.explicit_sol=explicit_sol
         
 
         self.FCPmethod=FCPmethod
@@ -85,6 +87,9 @@ class FCP(FileIOCalculator):
 
         if 'always_adjust' in kwargs:
             self.always_adjust = kwargs.pop('always_adjust')
+
+        if 'explicit_sol' in kwargs:
+            self.explicit_sol=kwargs.pop('explicit_sol')
 
         if 'atoms' in kwargs:
             atoms = kwargs.pop('atoms')
@@ -232,6 +237,22 @@ class FCP(FileIOCalculator):
 
             if abs(conv)<self.FCPconv:
                 break
+
+        if self.explicit_sol=True:
+            '''
+            The coexistence of implicit solvent and explicit solvent will lead to the double counting of solvent effect. Thus, implicit solvent should be removed after the Nelect is converged.
+            '''
+            if self.innercalc.name=='vasp':
+                self.innercalc.set(lsol=False,ldipol=True,idipol=3)
+            else:
+                raise calculator.CalculationFailed('the calculator is not supported yet')
+
+            atomstmp.calc=self.innercalc
+            energy_free = atomstmp.get_potential_energy(force_consistent=True)
+            energy=atomstmp.get_potential_energy(force_consistent=False)
+            grand_energy_free=energy_free+(self.wf+self.fermishift)*(self.Nelect-self.Nelect0)
+            grand_energy=energy+(self.wf+self.fermishift)*(self.Nelect-self.Nelect0)
+            
 
 
         self.results.update(
