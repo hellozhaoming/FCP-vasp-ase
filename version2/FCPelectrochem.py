@@ -243,15 +243,15 @@ class FCP(FileIOCalculator):
             The coexistence of implicit solvent and explicit solvent will lead to the double counting of solvent effect. Thus, implicit solvent should be removed after the Nelect is converged.
             '''
             if self.innercalc.name=='vasp':
-                self.innercalc.set(lsol=False,ldipol=True,idipol=3)
+                self.innercalc.set(lsol=False)
             else:
                 raise calculator.CalculationFailed('the calculator is not supported yet')
 
             atomstmp.calc=self.innercalc
             energy_free = atomstmp.get_potential_energy(force_consistent=True)
             energy=atomstmp.get_potential_energy(force_consistent=False)
-            grand_energy_free=energy_free+(self.wf+self.fermishift)*(self.Nelect-self.Nelect0)
-            grand_energy=energy+(self.wf+self.fermishift)*(self.Nelect-self.Nelect0)
+            grand_energy_free=energy_free+(self.wf+self.fermishift)*(Nelectold-self.Nelect0)
+            grand_energy=energy+(self.wf+self.fermishift)*(Nelectold-self.Nelect0)
             
 
 
@@ -269,7 +269,7 @@ class FCP(FileIOCalculator):
         
 
         with open(self.fcptxt, mode='a',encoding='utf-8') as f:
-            print("%d\t%11.6f\t%11.6f\t%11.6f\t%7.3f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f" %(self.FCPloop, self.Nelect, self.fermi, self.fermishift, -self.wf, Ucal, conv, energy, grand_energy,energy_free,grand_energy_free,self.Cpersurf), file = f)
+            print("%d\t%11.6f\t%11.6f\t%11.6f\t%7.3f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f\t%11.6f" %(self.FCPloop, Nelectold, self.fermi, self.fermishift, -self.wf, Ucal, conv, energy, grand_energy,energy_free,grand_energy_free,self.Cpersurf), file = f)
 
 
     def read_fermishift_vaspsol(self,outpath, lines=None):
