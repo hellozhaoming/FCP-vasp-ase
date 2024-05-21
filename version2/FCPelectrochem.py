@@ -238,7 +238,7 @@ class FCP(FileIOCalculator):
             if abs(conv)<self.FCPconv:
                 break
 
-        if self.explicit_sol=True:
+        if self.explicit_sol==True:
             '''
             The coexistence of implicit solvent and explicit solvent will lead to the double counting of solvent effect. Thus, implicit solvent should be removed after the Nelect is converged.
             '''
