@@ -21,6 +21,10 @@ The original paper used the code of version 1.0
 2. Copy FCPelectrochem.py to "ase_installation_path/calculators/".(note:ase_installation_path can be found by running 'ase info')
 
 3. If you want to use PLUMED interface, the python wrap of PLUMED should be installed. Read this page for more information (https://wiki.fysik.dtu.dk/ase/ase/calculators/plumed.html).
+4. For ASE >=3.23.0, One should create a 'config.ini' file in '~/.config/ase/' with the follow content:
+   [FCP]
+   command=
+   
 
 ## How to use (version 2)
 
