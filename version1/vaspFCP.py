@@ -1,4 +1,3 @@
-# Copyright (C) 2008 CSC - Scientific Computing Ltd.
 """ASE interface for fully constant potential with the Vienna Ab initio Simulation Package (VASP)
 
 version 1.0
